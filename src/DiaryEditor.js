@@ -18,13 +18,11 @@ const DiaryEditor = () => {
 
   const handleSubmit = () => {
     if (state.author.length < 1) {  //길이가 1이하인 경우
-      //focus
       authorInput.current.focus();  //authorInput 객체가 가리키는 현재 태그값(input)에 focus
       return; //종료
     }
 
     if (state.content.length < 5) {  //길이가 5이하인 경우
-      //focus
       contentInput.current.focus();
       return; //종료
     }
