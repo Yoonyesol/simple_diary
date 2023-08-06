@@ -1,6 +1,8 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 
 const DiaryEditor = () => {
+  const authorInput = useRef(); //html dom요소에 접근
+  const contentInput = useRef();
   const [state, setState] = useState({
     author: "",
     content: "",
@@ -15,7 +17,18 @@ const DiaryEditor = () => {
   }
 
   const handleSubmit = () => {
-    alert("저장 성공");
+    if (state.author.length < 1) {  //길이가 1이하인 경우
+      //focus
+      authorInput.current.focus();  //authorInput 객체가 가리키는 현재 태그값(input)에 focus
+      return; //종료
+    }
+
+    if (state.content.length < 5) {  //길이가 5이하인 경우
+      //focus
+      contentInput.current.focus();
+      return; //종료
+    }
+    alert("저장 성공!");
   }
   
   return (
@@ -23,12 +36,14 @@ const DiaryEditor = () => {
       <h2>오늘의 일기</h2>
       <div>
         <input
+          ref = {authorInput} //input태그에 접근
           name = "author"
           value={state.author}
           onChange={handleChangeState}/>
       </div>
       <div>
         <textarea
+          ref = {contentInput}
           name = "content"
           value={state.content}
           onChange={handleChangeState}
