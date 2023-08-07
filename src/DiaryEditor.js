@@ -1,6 +1,6 @@
 import { useState, useRef } from "react";
 
-const DiaryEditor = () => {
+const DiaryEditor = ({onCreate}) => {
   const authorInput = useRef(); //html dom요소에 접근
   const contentInput = useRef();
   const [state, setState] = useState({
@@ -26,7 +26,15 @@ const DiaryEditor = () => {
       contentInput.current.focus();
       return; //종료
     }
+
+    //onCreate 함수를 호출해 현재 form의 저자, 컨텐츠, 감정을 인자로 전달
+    onCreate(state.author, state.content, state.emotion);
     alert("저장 성공!");
+    setState({  //컴포넌트의 state(입력폼) 초기화
+      author: "",
+      content: "",
+      emotion: 1
+    })
   }
   
   return (
