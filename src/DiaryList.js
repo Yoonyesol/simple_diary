@@ -1,13 +1,13 @@
 import DiaryItem from "./DiaryItem";
 
 //일기 리스트를 렌더링할 컴포넌트
-const DiaryList = ({onRemove, diaryList}) => {
+const DiaryList = ({onEdit, onRemove, diaryList}) => {
   return <div className="DiaryList">
     <h2>일기 리스트</h2>
     <h4>{diaryList.length}개의 일기가 있습니다.</h4>
     <div>
       {diaryList.map((it)=>(  //it:diaryList의 요소(객체별로)렌더링
-        <DiaryItem key={it.id} {...it} onRemove={onRemove} /> //key값과 모든 요소를 spread연산자로 전달
+        <DiaryItem key={it.id} {...it} onEdit={onEdit} onRemove={onRemove} /> //key값과 모든 요소를 spread연산자로 전달
       ))}
     </div>
   </div>

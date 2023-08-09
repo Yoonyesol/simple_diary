@@ -63,10 +63,18 @@ function App() {
     const newDiaryList = data.filter((it) => it.id !== targetId); //targetId 일기를 제외한 모든 일기를 배열로 생성
     setData(newDiaryList) //data state 변경
   }
+
+  //작성된 일기를 수정하는 함수
+  const onEdit = (targetId, newContent) => {  //어떤 일기를 수정할지, 어떤 내용으로 수정할지
+    setData(
+      data.map((it)=>it.id === targetId ? {...it, content: newContent}:it)
+    )
+  }
+
   return (
     <div className="App">
       <DiaryEditor onCreate={onCreate} />
-      <DiaryList onRemove={onRemove} diaryList={data} />
+      <DiaryList onEdit={onEdit} onRemove={onRemove} diaryList={data} />
     </div>
   );
 }
