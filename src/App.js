@@ -1,51 +1,36 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import './App.css';
 import DiaryEditor from './DiaryEditor';
 import DiaryList from './DiaryList';
-import LifeCycle from './LifeCycle';
 
-const dummyList = [
-  {
-    id: 1, 
-    author: "둘리",
-    content: "하이1",
-    emotion: 1,
-    created_date: new Date().getTime()  //현재 시간을 ms로 반환
-  },
-  {
-    id: 2, 
-    author: "또치",
-    content: "하이13",
-    emotion: 5,
-    created_date: new Date().getTime() 
-  },
-  {
-    id: 3, 
-    author: "마이콜",
-    content: "하이1543",
-    emotion: 4,
-    created_date: new Date().getTime() 
-  },
-  {
-    id: 4, 
-    author: "희동이",
-    content: "하이13242",
-    emotion: 5,
-    created_date: new Date().getTime()  
-  },
-  {
-    id: 5, 
-    author: "고길동",
-    content: "하이13424",
-    emotion: 3,
-    created_date: new Date().getTime() 
-  },
-]
+//API 주소: https://jsonplaceholder.typicode.com/comments
 
 function App() {
-  const [data, setData] = useState(dummyList); //일기 데이터 배열, 배열을 관리할 변수
+  const [data, setData] = useState([]); //일기 데이터 배열, 배열을 관리할 변수
   
   const dataId = useRef(0); //일기 id
+
+  //API 호출 함수
+  const getData = async() => {
+    const res = await fetch("https://jsonplaceholder.typicode.com/comments")
+      .then((res) => res.json());
+    
+    const initData = res.slice(0, 20).map((it) => { //20개까지만 잘라서 가져오기
+      return {
+        author: it.email,
+        content: it.body,
+        emotion: Math.floor(Math.random() * 5) + 1,  //1~5까지의 난수 생성
+        created_date: new Date().getTime(),
+        id: dataId.current++
+      }
+    })
+    setData(initData);
+  }
+
+  //Mount 시에 getData함수 실행
+  useEffect(() => {
+    getData();
+  }, [])
 
   //새로운 일기를 추가하는 함수
   const onCreate = (author, content, emotion) => {  //setData를 통해, 작성된 일기데이터를 data에 업데이트
@@ -74,7 +59,6 @@ function App() {
 
   return (
     <div className="App">
-      <LifeCycle/>
       <DiaryEditor onCreate={onCreate} />
       <DiaryList onEdit={onEdit} onRemove={onRemove} diaryList={data} />
     </div>
