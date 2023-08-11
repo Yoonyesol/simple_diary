@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import './App.css';
 import DiaryEditor from './DiaryEditor';
 import DiaryList from './DiaryList';
+import OptimizeTest from './OptimizeTest';
 
 function App() {
   const [data, setData] = useState([]); //일기 데이터 배열, 배열을 관리할 변수
@@ -54,7 +55,7 @@ function App() {
       data.map((it)=>it.id === targetId ? {...it, content: newContent}:it)
     )
   }
-  
+
   //감정을 분석하는 함수
   //useMemo: 인자로 콜백 함수를 받아, 콜백 함수가 리턴하는 값의 연산을 최적화
   const getDiaryAnalysis = useMemo(() => {
@@ -69,6 +70,7 @@ function App() {
 
   return (
     <div className="App">
+      <OptimizeTest/>
       <DiaryEditor onCreate={onCreate} />
       <div>전체 일기: {data.length}</div>
       <div>기분 좋은 일기 개수: {goodCount}</div>
