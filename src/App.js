@@ -43,17 +43,16 @@ function App() {
   }, []) //mount시점에 한 번만 렌더링 되도록 함
 
   //작성된 일기를 삭제하는 함수
-  const onRemove = (targetId) => {
-    const newDiaryList = data.filter((it) => it.id !== targetId); //targetId 일기를 제외한 모든 일기를 배열로 생성
-    setData(newDiaryList) //data state 변경
-  }
+  const onRemove = useCallback((targetId) => {
+    setData((data)=>data.filter((it) => it.id !== targetId)); //data 파라미터에 리턴 부분 최신데이터 전달할 수 있게 함
+  },[])
 
   //작성된 일기를 수정하는 함수
-  const onEdit = (targetId, newContent) => {  //어떤 일기를 수정할지, 어떤 내용으로 수정할지
-    setData(
+  const onEdit = useCallback((targetId, newContent) => {  //어떤 일기를 수정할지, 어떤 내용으로 수정할지
+    setData((data)=>
       data.map((it)=>it.id === targetId ? {...it, content: newContent}:it)
     )
-  }
+  },[])
 
   //감정을 분석하는 함수
   //useMemo: 인자로 콜백 함수를 받아, 콜백 함수가 리턴하는 값의 연산을 최적화

@@ -1,10 +1,6 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef } from "react";
 
 const DiaryEditor = ({onCreate}) => {
-  useEffect(() => {
-    console.log("REk")
-  })
-
   const authorInput = useRef(); //html dom요소에 접근
   const contentInput = useRef();
   const [state, setState] = useState({
