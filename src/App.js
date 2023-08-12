@@ -1,8 +1,7 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import './App.css';
 import DiaryEditor from './DiaryEditor';
 import DiaryList from './DiaryList';
-import OptimizeTest from './OptimizeTest';
 
 function App() {
   const [data, setData] = useState([]); //일기 데이터 배열, 배열을 관리할 변수
@@ -32,19 +31,19 @@ function App() {
   }, [])
 
   //새로운 일기를 추가하는 함수
-  const onCreate = (author, content, emotion) => {  //setData를 통해, 작성된 일기데이터를 data에 업데이트
+  const onCreate = useCallback((author, content, emotion) => {  //setData를 통해, 작성된 일기데이터를 data에 업데이트
     const created_date = new Date().getTime();
     const newItem = { //새로운 일기 data로 추가되어야 하는 요소
       author, content, emotion, created_date,
       id: dataId.current
     }
     dataId.current += 1;  //매번 1씩 id 증가
-    setData([newItem, ...data]) //기존 아이템에 새로운 아이템을 추가
-  }
+    setData((data) => [newItem, ...data]); //기존 아이템에 새로운 아이템을 추가
+    //인자(data)를 통해 항상 최신의 state를 참고할 수 있게 된다.
+  }, []) //mount시점에 한 번만 렌더링 되도록 함
 
   //작성된 일기를 삭제하는 함수
   const onRemove = (targetId) => {
-    console.log(`${targetId}가 삭제되었습니다.`)
     const newDiaryList = data.filter((it) => it.id !== targetId); //targetId 일기를 제외한 모든 일기를 배열로 생성
     setData(newDiaryList) //data state 변경
   }
@@ -59,7 +58,6 @@ function App() {
   //감정을 분석하는 함수
   //useMemo: 인자로 콜백 함수를 받아, 콜백 함수가 리턴하는 값의 연산을 최적화
   const getDiaryAnalysis = useMemo(() => {
-    console.log("일기 분석 시작")
     const goodCount = data.filter((it)=>it.emotion >= 3).length;
     const badCount = data.length - goodCount;
     const goodRatio = (goodCount/data.length)*100;
@@ -70,7 +68,6 @@ function App() {
 
   return (
     <div className="App">
-      <OptimizeTest/>
       <DiaryEditor onCreate={onCreate} />
       <div>전체 일기: {data.length}</div>
       <div>기분 좋은 일기 개수: {goodCount}</div>
