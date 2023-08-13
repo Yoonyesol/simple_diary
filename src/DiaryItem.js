@@ -1,10 +1,9 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useContext, useRef, useState } from "react";
+import { DiaryDispatchContext } from "./App";
 
-const DiaryItem = ({ onEdit, onRemove, author, content, created_date, emotion, id }) => {
-  useEffect(() => {
-    console.log(`${id}번째 아이템 렌더!`)
-  })
-  
+const DiaryItem = ({ author, content, created_date, emotion, id }) => {
+  const { onRemove, onEdit } = useContext(DiaryDispatchContext);
+
   const [isEdit, setIsEdit] = useState(false);  //값을 수정중인지 아닌지 저장
   const toggleIsEdit = () => setIsEdit(!isEdit); //isEdit값을 반전시킴
 
@@ -31,7 +30,6 @@ const DiaryItem = ({ onEdit, onRemove, author, content, created_date, emotion, i
       onEdit(id, localContent);
       toggleIsEdit(); //수정 폼 닫아주기
     }
-    
   }
 
   return <div className="DiaryItem">
