@@ -1,10 +1,38 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useReducer, useRef} from 'react';
 import './App.css';
 import DiaryEditor from './DiaryEditor';
 import DiaryList from './DiaryList';
 
+const reducer = (state, action) => {//상태변화 일어나기 전의 상태, 어떤 상태변화를 일으켜야 하는지에 대한 정보가 담겨있는 객체
+  switch (action.type) {  //action의 타입에 따라 코드 실행. 리턴값이 data의 값이 된다
+    case 'INIT': {
+      return action.data  //새로운 state 리턴
+    }
+    case 'CREATE': {
+      const created_date = new Date().getTime();
+      const newItem = {
+        ...action.data, 
+        created_date
+      }
+      return [newItem, ...state]
+    }
+    case 'REMOVE': {
+      return state.filter((it)=>it.id !== action.targetId)
+    }
+    case 'EDIT': {
+      return state.map((it) => it.id === action.targetId ?
+        { ...it, content: action.newContent } : it) //컨텐츠 부분만 수정해서 전달
+    }
+    default:
+      return state;  //상태변화x
+  }
+}
+
 function App() {
-  const [data, setData] = useState([]); //일기 데이터 배열, 배열을 관리할 변수
+  //const [data, setData] = useState([]); //일기 데이터 배열, 배열을 관리할 변수
+  
+  //상태관리 로직을 컴포넌트 밖으로 분리
+  const [data, dispatch] = useReducer(reducer, [])  //(함수명, 초기값)
   
   const dataId = useRef(0); //일기 id
 
@@ -22,7 +50,8 @@ function App() {
         id: dataId.current++
       }
     })
-    setData(initData);
+
+    dispatch({type: 'INIT', data: initData})
   }
 
   //Mount 시에 getData함수 실행
@@ -32,26 +61,18 @@ function App() {
 
   //새로운 일기를 추가하는 함수
   const onCreate = useCallback((author, content, emotion) => {  //setData를 통해, 작성된 일기데이터를 data에 업데이트
-    const created_date = new Date().getTime();
-    const newItem = { //새로운 일기 data로 추가되어야 하는 요소
-      author, content, emotion, created_date,
-      id: dataId.current
-    }
+    dispatch({ type: "CREATE", data: {author, content, emotion, id: dataId.current} })
     dataId.current += 1;  //매번 1씩 id 증가
-    setData((data) => [newItem, ...data]); //기존 아이템에 새로운 아이템을 추가
-    //인자(data)를 통해 항상 최신의 state를 참고할 수 있게 된다.
-  }, []) //mount시점에 한 번만 렌더링 되도록 함
+  }, []) 
 
   //작성된 일기를 삭제하는 함수
   const onRemove = useCallback((targetId) => {
-    setData((data)=>data.filter((it) => it.id !== targetId)); //data 파라미터에 리턴 부분 최신데이터 전달할 수 있게 함
+    dispatch({type: "REMOVE", targetId})
   },[])
 
   //작성된 일기를 수정하는 함수
   const onEdit = useCallback((targetId, newContent) => {  //어떤 일기를 수정할지, 어떤 내용으로 수정할지
-    setData((data)=>
-      data.map((it)=>it.id === targetId ? {...it, content: newContent}:it)
-    )
+    dispatch({type: "EDIT", targetId, newContent})
   },[])
 
   //감정을 분석하는 함수
